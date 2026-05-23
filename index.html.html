@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TPAT3 Science & Tech Mock Exam</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: #f1f5f9;
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 antialiased">
+
+<header class="bg-gradient-to-r from-slate-900 to-blue-800 text-white shadow-lg">
+  <div class="max-w-4xl mx-auto px-6 py-6 text-center">
+    <h1 class="text-2xl md:text-3xl font-bold tracking-wide">
+      TPAT3 Science & Tech Assessment
+    </h1>
+    <p class="mt-2 text-blue-200 font-light text-sm md:text-base">
+      ฝึกคิด วิเคราะห์ และเชื่อมโยงข่าวสารเทคโนโลยีด้วยพื้นฐานวิทยาศาสตร์ ม.ปลาย
+    </p>
+  </div>
+</header>
+
+<section id="menu-screen" class="max-w-3xl mx-auto p-4 md:p-6 mt-8 fade-in">
+  <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-12 text-center">
+    <div class="text-6xl mb-6">💡</div>
+    <h2 class="text-2xl font-bold mb-4 text-slate-900">แบบทดสอบจำลอง TPAT3</h2>
+    <p class="text-slate-600 leading-relaxed mb-8">
+      ระบบจะทำการสุ่มข้อสอบข่าวสารวิทยาศาสตร์และเทคโนโลยี <b>จำนวน 5 ข้อ</b><br>
+      รูปแบบ <b>5 ตัวเลือก</b> พร้อมเฉลยละเอียดที่อิงเนื้อหา ม.ปลาย<br>
+    </p>
+    <button onclick="startQuiz()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+      เริ่มทำข้อสอบ
+    </button>
+  </div>
+</section>
+
+<section id="quiz-screen" class="hidden max-w-4xl mx-auto p-4 md:p-6 mt-4 fade-in">
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <div id="progressText" class="font-bold text-lg text-slate-900"></div>
+      <div class="text-sm text-slate-500 mt-0.5">
+        คะแนนสะสม: <span id="scoreText" class="font-semibold text-blue-600">0</span>
+      </div>
+    </div>
+    <div class="bg-slate-100 text-slate-700 font-medium px-4 py-2 rounded-lg border border-slate-200">
+      ข้อที่ <span id="currentQNum">1</span> / 5
+    </div>
+  </div>
+
+  <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-6">
+    <div id="progressBar" class="h-full bg-blue-600 transition-all duration-300" style="width:0%"></div>
+  </div>
+
+  <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200">
+    <div class="flex gap-2 mb-4">
+      <span id="categoryBadge" class="bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-xs font-semibold border border-blue-100"></span>
+    </div>
+
+    <div id="passageBox" class="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-5 text-slate-600 leading-relaxed text-sm md:text-base hidden"></div>
+
+    <h2 id="questionText" class="text-lg md:text-xl font-semibold leading-relaxed mb-6 text-slate-900"></h2>
+
+    <div id="optionsContainer" class="space-y-3"></div>
+  </div>
+
+  <div id="explanationBox" class="hidden mt-6 bg-blue-50 border border-blue-100 rounded-2xl p-6 md:p-8 shadow-sm fade-in">
+    <div id="resultStatus" class="text-xl font-bold mb-3"></div>
+    <div class="font-semibold text-slate-800 mb-2">เฉลยและคำอธิบาย:</div>
+    <div id="explanationText" class="text-slate-700 text-sm md:text-base leading-relaxed space-y-2"></div>
+  </div>
+
+  <button id="nextBtn" onclick="nextQuestion()"
+    class="hidden mt-6 w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-semibold transition-all shadow-md text-center">
+    ข้อต่อไป ➔
+  </button>
+</section>
+
+<section id="result-screen" class="hidden max-w-3xl mx-auto p-4 md:p-6 mt-8 fade-in">
+  <div class="bg-white rounded-3xl p-8 md:p-12 border border-slate-200 shadow-sm text-center">
+    <div class="text-6xl mb-4">🏆</div>
+    <h2 class="text-3xl font-bold mb-2 text-slate-900">สรุปผลคะแนน</h2>
+    <p class="text-slate-500 mb-8">การประเมินความรู้ข่าวสารวิทยาศาสตร์และเทคโนโลยี</p>
+
+    <div class="bg-slate-50 rounded-2xl py-8 mb-8 border border-slate-100">
+      <div class="text-6xl font-extrabold text-blue-600">
+        <span id="finalScore">0</span><span class="text-slate-400 font-light text-4xl"> / 5</span>
+      </div>
+      <div id="finalFeedback" class="mt-4 font-semibold text-slate-700 px-4"></div>
+    </div>
+
+    <div class="text-left bg-white border border-slate-200 rounded-xl p-6 mb-8">
+      <h3 class="font-bold text-lg mb-4 text-slate-900 border-b pb-2">📊 วิเคราะห์รายหมวดวิชา</h3>
+      <div id="categoryAnalysis" class="space-y-4 mt-4">
+        </div>
+    </div>
+
+    <button onclick="resetQuiz()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-semibold transition-all shadow-md">
+      ลองทำชุดใหม่อีกครั้ง
+    </button>
+  </div>
+</section>
+
+<script>
+// คลังโจทย์ 10 ข้อ (ระดับ ม.ปลาย) แบบ 5 ตัวเลือก
+const MOCK_DATABASE = [
+  {
+    category: "Chemistry / Technology",
+    passage: "อุตสาหกรรมรถยนต์ไฟฟ้า (EV) เริ่มให้ความสนใจในการพัฒนา 'แบตเตอรี่โซเดียมไอออน (Sodium-ion)' มาทดแทน 'แบตเตอรี่ลิเธียมไอออน (Lithium-ion)' เพื่อแก้ปัญหาแร่ลิเธียมขาดแคลนและมีราคาแพง",
+    q: "จากความรู้เรื่องสมบัติของธาตุตามตารางธาตุ ม.4 เหตุใดจึงสามารถนำ 'โซเดียม' มาใช้เป็นขั้วแบตเตอรี่ทดแทน 'ลิเธียม' ได้ และมีข้อเสียเปรียบอย่างไร?",
+    options: [
+      "โซเดียมมีเวเลนซ์อิเล็กตรอนเท่ากับลิเธียมจึงจ่ายประจุได้เหมือนกัน แต่โซเดียมมีมวลอะตอมมากกว่าทำให้แบตเตอรี่หนักกว่า",
+      "โซเดียมเป็นแก๊สเฉื่อยจึงมีความปลอดภัยสูงกว่าลิเธียม แต่นำไฟฟ้าได้น้อยกว่าจึงชาร์จไฟได้ช้า",
+      "โซเดียมมีค่าอิเล็กโทรเนกาติวิตี (EN) สูงกว่าลิเธียมจึงดึงดูดอิเล็กตรอนได้ดีกว่า แต่ทำปฏิกิริยากับน้ำรุนแรงมาก",
+      "โซเดียมอยู่ในคาบเดียวกันกับลิเธียมจึงมีขนาดอะตอมเท่ากัน แต่มวลอะตอมน้อยกว่าทำให้เก็บประจุได้น้อยกว่า",
+      "โซเดียมทนทานต่อความร้อนสูงได้ดีกว่าลิเธียมจึงไม่เกิดการระเบิด แต่มีสถานะเป็นของเหลวที่อุณหภูมิห้องจึงออกแบบยาก"
+    ],
+    correct: 0,
+    explain: "โซเดียม (Na) และ ลิเธียม (Li) อยู่ในกลุ่มโลหะแอลคาไล (หมู่ 1A) เหมือนกัน จึงมีเวเลนซ์อิเล็กตรอน = 1 ทำให้มีสมบัติทางเคมีคล้ายกันคือเสียอิเล็กตรอนได้ง่าย (เกิดประจุ +1) จึงใช้ทำงานในแบตเตอรี่ได้เหมือนกัน แต่ข้อเสียคือ Na อยู่คาบที่ 3 จึงมีมวลอะตอมและขนาดอะตอมมากกว่า Li (คาบ 2) ทำให้แบตเตอรี่โซเดียมมีน้ำหนักมากกว่าและมีความหนาแน่นพลังงานต่อน้ำหนักน้อยกว่า"
+  },
+  {
+    category: "Biology / Health Tech",
+    passage: "เทคโนโลยีวัคซีนชนิด mRNA (Messenger RNA) ถูกนำมาใช้อย่างแพร่หลายในการรับมือกับโรคระบาดใหม่ ซึ่งแตกต่างจากวัคซีนเชื้อตายในอดีตอย่างสิ้นเชิง",
+    q: "กลไกการทำงานของวัคซีนชนิด mRNA สอดคล้องกับกระบวนการใดตามหลักชีววิทยา ม.4 เรื่องการถ่ายทอดลักษณะทางพันธุกรรม?",
+    options: [
+      "การจำลองตัวเองของดีเอ็นเอ (DNA Replication) เพื่อสร้างเซลล์เม็ดเลือดขาวชนิดใหม่",
+      "การนำสาย mRNA ของไวรัสเข้าไปกระตุ้นให้ไรโบโซมของเซลล์มนุษย์แปลรหัสสร้างโปรตีนหนามเพื่อกระตุ้นภูมิคุ้มกัน",
+      "การใช้เอนไซม์ตัดต่อยีน (CRISPR) เพื่อดัดแปลงโครโมโซมของมนุษย์ให้ต้านทานไวรัสโดยกำเนิด",
+      "การนำเปลือกโปรตีนของไวรัสที่ตายแล้วฉีดเข้ากระแสเลือดเพื่อให้แอนติบอดีมาจับโดยตรง",
+      "การสั่งการให้ไมโทคอนเดรียหลั่งสารพิษออกมาย่อยสลายเยื่อหุ้มเซลล์ของไวรัสที่บุกรุกเข้ามา"
+    ],
+    correct: 1,
+    explain: "หลักการของ Central Dogma (DNA -> RNA -> Protein) วัคซีน mRNA ไม่ได้ฉีดเชื้อไวรัสเข้าไป แต่ฉีดรหัสพันธุกรรม mRNA เข้าไปในเซลล์มนุษย์ รหัสนี้จะทำหน้าที่เป็นแม่แบบให้ <b>ไรโบโซม (Ribosome)</b> ในไซโทพลาซึมทำการแปลรหัส (Translation) และสังเคราะห์ 'โปรตีนหนาม' ของไวรัสขึ้นมา เมื่อระบบภูมิคุ้มกันพบโปรตีนแปลกปลอมนี้ จึงสร้างแอนติบอดีขึ้นมาจดจำและต่อสู้กับโรค"
+  },
+  {
+    category: "Earth Space / Physics",
+    passage: "กล้องโทรทรรศน์อวกาศเจมส์ เว็บบ์ (JWST) ถูกสร้างขึ้นให้มีแผงกระจกเคลือบทองคำขนาดใหญ่ และทำงานในอุณหภูมิที่เย็นจัดเกือบศูนย์องศาสัมบูรณ์ เพื่อส่องดูเอกภพยุคแรกเริ่มที่อยู่ห่างไกลออกไปหลายพันล้านปีแสง",
+    q: "เพราะเหตุใดกล้อง JWST จึงต้องออกแบบมาเพื่อตรวจจับ 'รังสีอินฟราเรด (Infrared)' แทนที่จะเป็นแสงที่มองเห็นได้ (Visible Light) ตามปกติ?",
+    options: [
+      "เพราะในอวกาศที่ห่างไกลไม่มีแสงสว่างเลย วัตถุทุกชนิดจึงแผ่รังสีอินฟราเรดออกมาเท่านั้น",
+      "เพราะฝุ่นละอองในอวกาศจะดูดกลืนรังสีอินฟราเรดจนหมด กล้องจึงต้องจับภาพเงาที่หายไป",
+      "เพราะแสงจากกาแล็กซีที่อยู่ไกลมากจะเกิดปรากฏการณ์ดอปเพลอร์ ทำให้ความยาวคลื่นยืดออกจนตกอยู่ในย่านอินฟราเรด (Redshift)",
+      "เพราะรังสีอินฟราเรดเป็นคลื่นแม่เหล็กไฟฟ้าชนิดเดียวที่สามารถเดินทางทะลุผ่านหลุมดำได้",
+      "เพราะกระจกเคลือบทองคำสามารถสะท้อนได้เฉพาะรังสีอินฟราเรดเท่านั้น ส่วนแสงสีอื่นจะทะลุผ่านไปหมด"
+    ],
+    correct: 2,
+    explain: "ตามทฤษฎีบิกแบง เอกภพกำลังขยายตัวอย่างต่อเนื่อง แสงจากกาแล็กซีที่อยู่ไกลมากๆ เมื่อเดินทางข้ามอวกาศมาหาโลก ความยาวคลื่นของแสงจะถูกยืดออกตามการขยายตัวของพื้นที่อวกาศ (ปรากฏการณ์การเลื่อนทางแดง หรือ Redshift) ทำให้แสงที่เคยมองเห็นได้ยืดความยาวคลื่นออกไปจนกลายเป็น <b>รังสีอินฟราเรด (คลื่นความร้อน)</b> กล้อง JWST จึงต้องถูกออกแบบมาเพื่อจับคลื่นความร้อนนี้โดยเฉพาะ"
+  },
+  {
+    category: "Environment / Biology",
+    passage: "ปัญหาฝุ่นละอองขนาดเล็ก PM 2.5 มักทวีความรุนแรงในประเทศไทยช่วงฤดูหนาวถึงฤดูแล้ง ซึ่งนอกจากจะส่งผลต่อระบบทางเดินหายใจแล้ว ยังสามารถเข้าสู่ระบบหมุนเวียนเลือดได้",
+    q: "สาเหตุทางอุตุนิยมวิทยาที่ทำให้ฝุ่นสะสมตัวในแนวตั้งช่วงฤดูหนาว และอวัยวะใดของระบบทางเดินหายใจมนุษย์ที่ฝุ่นขนาดนี้สามารถแพร่เข้าสู่เส้นเลือดฝอยได้โดยตรง?",
+    options: [
+      "ปรากฏการณ์เรือนกระจก / หลอดลมฝอย (Bronchiole)",
+      "ปรากฏการณ์เกาะความร้อนเมือง / ท่อลม (Trachea)",
+      "ปรากฏการณ์อุณหภูมิผกผัน (Temperature Inversion) / ถุงลมปอด (Alveolus)",
+      "ลมมรสุมตะวันตกเฉียงใต้ / ขนจมูกและคอหอย (Pharynx)",
+      "ความกดอากาศต่ำ / เยื่อหุ้มปอด (Pleura)"
+    ],
+    correct: 2,
+    explain: "ในฤดูหนาวมักเกิดปรากฏการณ์ <b>อุณหภูมิผกผัน (Temperature Inversion)</b> คือมีชั้นอากาศอุ่นลอยกดทับชั้นอากาศเย็นด้านล่าง ทำหน้าที่เหมือนฝาชีครอบเมืองไว้ ฝุ่นจึงลอยระบายออกไปไม่ได้ และเมื่อหายใจเข้าไป ฝุ่น PM 2.5 มีขนาดเล็กมากจนหลุดรอดระบบกรองของร่างกายลงไปถึง <b>ถุงลมปอด (Alveolus)</b> ซึ่งมีผนังบางและมีเส้นเลือดฝอยมาหล่อเลี้ยง ฝุ่นจึงแพร่เข้าสู่กระแสเลือดได้โดยตรง"
+  },
+  {
+    category: "Computing Science / Tech",
+    passage: "ระบบจัดการเอกสารของโรงพยาบาลหลายแห่งเริ่มนำเทคโนโลยี Blockchain มาประยุกต์ใช้เพื่อเก็บรักษาเวชระเบียน เพื่อป้องกันการถูกแฮกเกอร์โจรกรรมหรือดัดแปลงข้อมูลประวัติการรักษา",
+    q: "หลักการทางวิทยาการคำนวณข้อใดของ Blockchain ที่ทำให้การย้อนกลับไปแก้ไขข้อมูลทำได้ยากและมีความปลอดภัยสูงกว่าระบบฐานข้อมูลทั่วไป?",
+    options: [
+      "การรวมศูนย์ข้อมูลทั้งหมดไว้ที่คอมพิวเตอร์แม่ข่ายหลักเพียงเครื่องเดียวเพื่อง่ายต่อการเข้ารหัส",
+      "การจัดเก็บข้อมูลแบบกระจายศูนย์ (Decentralized) โดยนำข้อมูลมาเชื่อมต่อกันเป็นสายโซ่ด้วยรหัสแฮช (Hash) หากบล็อกใดถูกแก้ รหัสจะเปลี่ยนและระบบจะปฏิเสธ",
+      "การกำหนดให้ผู้ใช้งานทุกคนใช้รหัสผ่านแบบเดียวกันเพื่อความรวดเร็วในการตรวจสอบข้อมูลย้อนหลัง",
+      "การสร้างระบบปัญญาประดิษฐ์ (AI) คอยนั่งเฝ้าดูและลบข้อมูลที่น่าสงสัยทิ้งอัตโนมัติ",
+      "การใช้ระบบเครือข่ายอินเทอร์เน็ตแบบออฟไลน์เท่านั้น ทำให้แฮกเกอร์จากภายนอกไม่สามารถเชื่อมต่อได้"
+    ],
+    correct: 1,
+    explain: "หัวใจหลักของ Blockchain คือการจัดเก็บข้อมูลแบบ <b>กระจายศูนย์ (Decentralized Ledger)</b> โดยจะนำข้อมูลมามัดรวมเป็นกล่อง (Block) แต่ละบล็อกจะมีรหัสทางคณิตศาสตร์เรียกว่า 'Hash' ซึ่งคำนวณมาจากข้อมูลภายในกล่องและรหัสของกล่องก่อนหน้า หากมีใครแอบแก้ไขข้อมูลแม้แต่นิดเดียว รหัส Hash จะเปลี่ยนไปทันที ทำให้โซ่ขาด และคอมพิวเตอร์เครื่องอื่นๆ ในเครือข่ายจะตรวจสอบพบและปฏิเสธบล็อกที่ถูกปลอมแปลงนั้นทันที"
+  },
+  {
+    category: "Physics / Energy",
+    passage: "วิศวกรออกแบบระบบ 'เบรกแบบกู้คืนพลังงาน (Regenerative Braking)' ในรถยนต์ไฟฟ้า (EV) ซึ่งระบบนี้จะทำงานเมื่อผู้ขับขี่ถอนคันเร่งหรือเหยียบเบรก",
+    q: "กลไกการทำงานของระบบนี้ สอดคล้องกับกฎและหลักการทางฟิสิกส์ ม.ปลาย ในข้อใดมากที่สุด?",
+    options: [
+      "กฎการอนุรักษ์พลังงาน โดยเปลี่ยนพลังงานศักย์โน้มถ่วงเป็นพลังงานความร้อนเพื่อหยุดรถ",
+      "ปรากฏการณ์โฟโตอิเล็กทริก โดยใช้แสงจากไฟเบรกกระตุ้นอิเล็กตรอนให้ไหลกลับเข้าแบตเตอรี่",
+      "กฎข้อที่สามของนิวตัน โดยใช้แรงเสียดทานของผ้าเบรกผลักรถให้ถอยหลังเพื่อลดความเร็ว",
+      "กฎการอนุรักษ์พลังงานและการเหนี่ยวนำแม่เหล็กไฟฟ้า โดยเปลี่ยนพลังงานจลน์ของการเคลื่อนที่เป็นพลังงานไฟฟ้ากลับเข้าแบตเตอรี่",
+      "กฎของอุณหพลศาสตร์ โดยดึงความร้อนจากสิ่งแวดล้อมมาเปลี่ยนเป็นกระแสไฟฟ้าช่วยหน่วงล้อ"
+    ],
+    correct: 3,
+    explain: "ตาม <b>กฎการอนุรักษ์พลังงาน</b> พลังงานไม่สูญหายแต่เปลี่ยนรูปได้ รถที่วิ่งอยู่มีพลังงานจลน์ เมื่อถอนคันเร่ง ระบบจะสั่งให้มอเตอร์ไฟฟ้าทำงานสลับทางกลายเป็น 'เครื่องกำเนิดไฟฟ้า (ไดนาโม)' โดยใช้เพลาล้อที่หมุนอยู่ไปหมุนขดลวดตัดกับสนามแม่เหล็ก (เกิดการเหนี่ยวนำแม่เหล็กไฟฟ้า) ทำให้เกิดกระแสไฟฟ้าไหลกลับไปชาร์จแบตเตอรี่ ซึ่งความฝืดจากการปั่นไฟนี้เองที่เป็นแรงหน่วงทำให้รถชะลอความเร็วลง"
+  },
+  {
+    category: "Chemistry / Environment",
+    passage: "พลาสติกย่อยสลายได้ทางชีวภาพยอดนิยมชนิดหนึ่งคือ PLA (Polylactic Acid) ซึ่งผลิตจากการหมักแป้งพืช มักนำมาทำบรรจุภัณฑ์รักษ์โลกและเส้นพลาสติกสำหรับเครื่องพิมพ์ 3 มิติ",
+    q: "ข้อใดอธิบายโครงสร้างพอลิเมอร์และการย่อยสลายของพลาสติกประเภทนี้ได้ถูกต้องตามหลักเคมี ม.4?",
+    options: [
+      "เป็นพอลิเมอร์แบบร่างแห (Cross-linked) ที่อะตอมเชื่อมกันด้วยพันธะไอออนิก จุลินทรีย์จึงย่อยไม่ได้ ต้องใช้ความร้อนสูงเผาเท่านั้น",
+      "เป็นพอลิเมอร์สายยาวที่เชื่อมกันด้วยพันธะโควาเลนต์ สามารถถูกตัดสายและย่อยสลายกลับคืนสู่ธรรมชาติได้โดยเอนไซม์จากจุลินทรีย์และความชื้น",
+      "เป็นสารประกอบไฮโดรคาร์บอนบริสุทธิ์ที่ไม่มีออกซิเจน ทำให้ไม่เกิดปฏิกิริยาออกซิเดชัน จึงย่อยสลายได้เองเมื่อโดนแสงแดด",
+      "เป็นพอลิเมอร์ธรรมชาติประเภทเดียวกับเซลลูโลส ซึ่งละลายน้ำได้ทันทีเมื่อสัมผัสกับความชื้นในอากาศเพียง 1 วัน",
+      "เป็นสารอนินทรีย์ที่ตกผลึกเป็นเส้นใย ย่อยสลายได้ด้วยกระบวนการทางฟิสิกส์เท่านั้น เช่น การบดให้ละเอียด"
+    ],
+    correct: 1,
+    explain: "พลาสติกชีวภาพอย่าง PLA เป็น <b>พอลิเมอร์สังเคราะห์</b> ที่เกิดจากปฏิกิริยาพอลิเมอไรเซชัน โมเลกุลยึดเหนี่ยวกันด้วย <b>พันธะโควาเลนต์</b> (กลุ่มเอสเทอร์) โครงสร้างทางเคมีของมันเปิดโอกาสให้เอนไซม์จากจุลินทรีย์ในธรรมชาติ (ในสภาวะที่มีความชื้นและอุณหภูมิเหมาะสม เช่น โรงหมักปุ๋ย) สามารถเข้าไปเร่งปฏิกิริยาไฮโดรไลซิสเพื่อตัดสายพอลิเมอร์ให้สั้นลง และย่อยสลายกลายเป็นคาร์บอนไดออกไซด์และน้ำได้ในที่สุด"
+  },
+  {
+    category: "Biology / Genetics",
+    passage: "เทคโนโลยี CRISPR-Cas9 ได้รับการยกย่องและคว้ารางวัลโนเบลสาขาเคมี เนื่องจากเป็นนวัตกรรมที่พลิกโฉมวงการพันธุวิศวกรรม",
+    q: "เทคโนโลยี CRISPR-Cas9 มีความสำคัญในการทำงานระดับเซลล์อย่างไร?",
+    options: [
+      "เป็นวัคซีนป้องกันไวรัสโดยการสร้างเยื่อหุ้มเซลล์ชั้นที่สองให้หนาขึ้นจนไวรัสเจาะไม่เข้า",
+      "เป็นกระบวนการโคลนนิ่งสิ่งมีชีวิตให้มีลักษณะเหมือนต้นแบบทุกประการโดยไม่อาศัยเพศ",
+      "เป็นเครื่องมือที่เปรียบเสมือนกรรไกรระดับโมเลกุล ใช้สำหรับค้นหา ตัด และแก้ไขลำดับเบสบนสาย DNA ได้อย่างจำเพาะเจาะจง",
+      "เป็นเทคโนโลยีการผสมเทียมระดับไซโตพลาซึม เพื่อสร้างสิ่งมีชีวิตสายพันธุ์ใหม่ที่ทนทานต่อสารเคมี",
+      "เป็นเอนไซม์ที่ใช้เร่งอัตราการแบ่งเซลล์แบบไมโอซิส เพื่อเพิ่มผลผลิตทางการเกษตรเป็นสองเท่า"
+    ],
+    correct: 2,
+    explain: "CRISPR-Cas9 ได้รับสมญานามว่า <b>'กรรไกรพันธุกรรม'</b> ระบบนี้ประยุกต์มาจากระบบภูมิคุ้มกันของแบคทีเรีย โดยใช้ RNA สายสั้นๆ เป็นตัวนำทางพากรรไกร (เอนไซม์ Cas9) ไปยังตำแหน่งลำดับเบสบนสาย DNA ที่ต้องการได้อย่างแม่นยำ จากนั้นจึงทำการตัด DNA สายคู่ขาดออกจากกัน ทำให้นักวิทยาศาสตร์สามารถนำไปใช้แทรก ตัดทิ้ง หรือแก้ไขยีนที่ผิดปกติในสิ่งมีชีวิตได้อย่างมีประสิทธิภาพและรวดเร็ว"
+  },
+  {
+    category: "Earth Space / Environment",
+    passage: "ในเวทีการประชุมระดับโลก (COP) มีการผลักดันระบบ 'คาร์บอนเครดิต (Carbon Credit)' อย่างจริงจัง เพื่อเป็นหนึ่งในกลไกทางเศรษฐศาสตร์ในการบรรเทาปัญหาภาวะโลกเดือด",
+    q: "ความหมายและการทำงานของ 'คาร์บอนเครดิต' สอดคล้องกับข้อใดมากที่สุด?",
+    options: [
+      "ภาษีประจำปีที่รัฐบาลบังคับเก็บจากประชาชนทุกคนที่ใช้รถยนต์เครื่องยนต์สันดาปภายใน",
+      "ปริมาณสิทธิในการปล่อยก๊าซเรือนกระจก ที่องค์กรซึ่งลดการปล่อยก๊าซได้สามารถนำไปขายเป็นรายได้ให้กับองค์กรที่ปล่อยก๊าซเกินเป้าหมาย",
+      "บัตรเครดิตที่ผลิตจากพลาสติกรีไซเคิล 100% เพื่อกระตุ้นให้ประชาชนใช้จ่ายในสินค้าที่เป็นมิตรต่อสิ่งแวดล้อม",
+      "ปริมาณก๊าซคาร์บอนมอนอกไซด์ (CO) ขั้นต่ำที่กฎหมายอนุญาตให้โรงงานอุตสาหกรรมสามารถปล่อยได้ฟรีโดยไม่เสียค่าปรับ",
+      "การปลูกป่าทดแทนจำนวน 1 ต้น จะได้รับเงินอุดหนุนจากธนาคารโลกเท่ากับ 1 คาร์บอนเครดิตเสมอ"
+    ],
+    correct: 1,
+    explain: "<b>คาร์บอนเครดิต (Carbon Credit)</b> คือ สิทธิในการปล่อยก๊าซเรือนกระจก (1 เครดิต = การลดก๊าซ CO2 จำนวน 1 ตัน) เป็นกลไกทางการตลาดที่เปลี่ยนการรักษาสิ่งแวดล้อมให้เป็นมูลค่า องค์กรที่ทำโปรเจกต์ลดคาร์บอนได้ดีกว่าเป้าหมาย จะได้เครดิตสะสมไว้ และสามารถนำเครดิตนี้ไป 'ขาย' ให้กับโรงงานหรือบริษัทอื่นที่ยังปล่อยคาร์บอนเกินเพดานที่กฎหมายกำหนด เพื่อเป็นการชดเชย (Carbon Offsetting)"
+  },
+  {
+    category: "Computing Science / AI",
+    passage: "ระบบ Generative AI เช่น ChatGPT สามารถโต้ตอบและตอบคำถามภาษาไทยได้อย่างเป็นธรรมชาติ ซึ่งเบื้องหลังต้องใช้การประมวลผลข้อมูลมหาศาล",
+    q: "โมเดล AI เหล่านี้ใช้เทคนิคพื้นฐานใดในการสร้างประโยคตอบกลับขึ้นมาใหม่ แทนที่จะเป็นการดึงข้อความจากอินเทอร์เน็ตมาแปะโดยตรง?",
+    options: [
+      "การค้นหาแบบสุ่ม (Random Search) จากวิกิพีเดียแล้วนำมาแปลภาษา",
+      "การใช้มนุษย์พิมพ์ตอบกลับแบบเรียลไทม์อยู่เบื้องหลังระบบ (Wizard of Oz)",
+      "การเรียนรู้ด้วยเครื่อง (Machine Learning) ที่ฝึกฝนจากข้อความมหาศาล เพื่อคำนวณและทำนายคำถัดไปที่น่าจะถูกต้องและเหมาะสมที่สุดตามบริบท",
+      "การใช้ตรรกะแบบบูลีน (Boolean Logic) ตรวจสอบเงื่อนไข If-Else พื้นฐานที่โปรแกรมเมอร์เขียนไว้ทั้งหมดล่วงหน้า",
+      "การทำงานของควอนตัมคอมพิวเตอร์เพื่อสแกนหนังสือทุกเล่มบนโลกภายใน 1 วินาที"
+    ],
+    correct: 2,
+    explain: "โมเดลภาษาขนาดใหญ่ (Large Language Models - LLMs) อาศัยเทคนิค <b>Machine Learning (โดยเฉพาะ Deep Learning และโครงข่ายประสาทเทียมแบบ Transformer)</b> ตัวโมเดลจะอ่านข้อมูลตัวหนังสือมหาศาลเพื่อเรียนรู้โครงสร้าง ไวยากรณ์ และบริบทของภาษา เมื่อเราป้อนคำถาม AI จะไม่ใช้วิธีค้นหาข้อความเป๊ะๆ มาแปะ แต่จะทำการ <b>'คำนวณความน่าจะเป็นทางสถิติ'</b> ว่าคำหรือพยางค์ถัดไปควรจะเป็นคำว่าอะไร เพื่อต่อเรียงกันจนกลายเป็นประโยคที่สมบูรณ์และมีความหมายเข้ากับบริบทที่สุด"
+  }
+];
+
+// Variables
+let questions = [];
+let current = 0;
+let score = 0;
+let answered = false;
+
+// Categories for summary
+let currentCategories = {};
+let categoryScores = {};
+
+// Shuffle array
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function startQuiz() {
+  // Reset
+  questions = [];
+  current = 0;
+  score = 0;
+  categoryScores = {};
+  currentCategories = {};
+
+  // Pick 5 random questions
+  const shuffledDb = shuffle([...MOCK_DATABASE]);
+  questions = shuffledDb.slice(0, 5);
+
+  // Setup tracking
+  questions.forEach(q => {
+    currentCategories[q.category] = (currentCategories[q.category] || 0) + 1;
+    if (!categoryScores[q.category]) categoryScores[q.category] = 0;
+  });
+
+  document.getElementById("menu-screen").classList.add("hidden");
+  document.getElementById("result-screen").classList.add("hidden");
+  document.getElementById("quiz-screen").classList.remove("hidden");
+
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const q = questions[current];
+
+  // UI Updates
+  document.getElementById("currentQNum").innerText = current + 1;
+  document.getElementById("scoreText").innerText = score;
+  document.getElementById("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
+  document.getElementById("categoryBadge").innerText = q.category;
+  
+  // Hide specific elements
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("explanationBox").classList.add("hidden");
+
+  // Show passage if exists
+  const passageBox = document.getElementById("passageBox");
+  if(q.passage) {
+    passageBox.innerText = q.passage;
+    passageBox.classList.remove("hidden");
+  } else {
+    passageBox.classList.add("hidden");
+  }
+
+  // Set question
+  document.getElementById("questionText").innerText = `${current + 1}. ${q.q}`;
+
+  // Process Options (Shuffle them but track correct index)
+  const container = document.getElementById("optionsContainer");
+  container.innerHTML = "";
+
+  // The correct text based on original index
+  const correctText = q.options[q.correct];
+  
+  // Shuffle options
+  const shuffledOptions = shuffle([...q.options]);
+  const newCorrectIndex = shuffledOptions.indexOf(correctText);
+  q.tempCorrectIndex = newCorrectIndex;
+
+  shuffledOptions.forEach((opt, index) => {
+    const btn = document.createElement("button");
+    // Styling the button
+    btn.className = "w-full text-left p-4 md:p-5 border-2 border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-sm md:text-base font-normal block cursor-pointer focus:outline-none text-slate-700 hover:border-blue-300";
+    btn.innerHTML = opt;
+    btn.onclick = () => checkAnswer(index, btn);
+    container.appendChild(btn);
+  });
+}
+
+function checkAnswer(index, btn) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[current];
+  const targetCorrectIndex = q.tempCorrectIndex; 
+  const buttons = document.querySelectorAll("#optionsContainer button");
+
+  // Disable all buttons
+  buttons.forEach(b => {
+    b.disabled = true;
+    b.classList.remove('hover:bg-slate-50', 'hover:border-blue-300');
+    b.classList.add('opacity-80', 'cursor-not-allowed');
+  });
+
+  const resultStatus = document.getElementById("resultStatus");
+
+  if (index === targetCorrectIndex) {
+    // Correct
+    score++;
+    categoryScores[q.category] = (categoryScores[q.category] || 0) + 1;
+    document.getElementById("scoreText").innerText = score;
+
+    btn.className = "w-full text-left p-4 md:p-5 border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-medium rounded-xl text-sm md:text-base block shadow-sm relative overflow-hidden";
+    btn.innerHTML = `<span class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl">✅</span>` + btn.innerHTML;
+    
+    resultStatus.innerHTML = "🎉 ตอบถูกต้อง!";
+    resultStatus.className = "text-xl font-bold text-emerald-600 mb-3";
+  } else {
+    // Wrong
+    btn.className = "w-full text-left p-4 md:p-5 border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium rounded-xl text-sm md:text-base block relative overflow-hidden";
+    btn.innerHTML = `<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xl">❌</span>` + btn.innerHTML;
+    
+    // Highlight correct answer
+    const correctBtn = buttons[targetCorrectIndex];
+    correctBtn.className = "w-full text-left p-4 md:p-5 border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-medium rounded-xl text-sm md:text-base block relative mt-2";
+    correctBtn.innerHTML = `<span class="font-bold text-emerald-700 mb-1 block text-xs uppercase tracking-wide">คำตอบที่ถูกต้อง:</span>` + correctBtn.innerHTML;
+    
+    resultStatus.innerHTML = "💡 ยังไม่ถูกนะครับ";
+    resultStatus.className = "text-xl font-bold text-rose-600 mb-3";
+  }
+
+  // Show explanation
+  document.getElementById("explanationText").innerHTML = q.explain;
+  document.getElementById("explanationBox").classList.remove("hidden");
+
+  // Show next button
+  const nextBtn = document.getElementById("nextBtn");
+  nextBtn.classList.remove("hidden");
+  if (current === questions.length - 1) {
+    nextBtn.innerText = "ดูผลคะแนนรวม ➔";
+  } else {
+    nextBtn.innerText = "ข้อต่อไป ➔";
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz-screen").classList.add("hidden");
+  document.getElementById("result-screen").classList.remove("hidden");
+
+  document.getElementById("finalScore").innerText = score;
+
+  let feedback = "";
+  if (score === 5) {
+    feedback = "เก่งมาก! พื้นฐานวิทยาศาสตร์แน่นและอัปเดตข่าวสารเทคโนโลยีได้ดีเยี่ยม";
+  } else if (score >= 3) {
+    feedback = "ทำได้ดีครับ! มีความเข้าใจพื้นฐานที่ดี แนะนำให้อ่านเฉลยเพื่อเสริมความเข้าใจให้แน่นขึ้น";
+  } else {
+    feedback = "ไม่เป็นไรครับ! แนวข้อสอบ TPAT3 เน้นการประยุกต์ ลองอ่านเฉลยทำความเข้าใจแล้วฝึกทำบ่อยๆ นะครับ";
+  }
+  document.getElementById("finalFeedback").innerText = feedback;
+
+  const analysisContainer = document.getElementById("categoryAnalysis");
+  analysisContainer.innerHTML = "";
+
+  Object.keys(currentCategories).forEach(cat => {
+    const totalInRound = currentCategories[cat];
+    const scoreInRound = categoryScores[cat] || 0;
+    const percentage = Math.round((scoreInRound / totalInRound) * 100);
+
+    let barColor = "bg-rose-400";
+    if (percentage === 100) barColor = "bg-emerald-500";
+    else if (percentage >= 50) barColor = "bg-blue-400";
+
+    analysisContainer.innerHTML += `
+      <div class="space-y-1.5 bg-slate-50 p-3 rounded-lg border border-slate-100">
+        <div class="flex justify-between text-sm font-medium text-slate-700">
+          <span class="font-semibold text-slate-900">${cat}</span>
+          <span>${scoreInRound} / ${totalInRound} ข้อ</span>
+        </div>
+        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div class="${barColor} h-full transition-all duration-500" style="width: ${percentage}%"></div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function resetQuiz() {
+  document.getElementById("result-screen").classList.add("hidden");
+  document.getElementById("menu-screen").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
